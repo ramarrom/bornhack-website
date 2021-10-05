@@ -606,6 +606,15 @@ class CreditNote(CreatedUpdatedModel):
 
     sent_to_customer = models.BooleanField(default=False)
 
+    invoice = models.ForeignKey(
+        "shop.Invoice",
+        related_name="creditnotes",
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        help_text="The Invoice this CreditNote relates to, if any.",
+    )
+
     def clean(self):
         errors = []
         if self.user and self.customer:
