@@ -139,7 +139,7 @@ from .views import (
     ZettleBalanceListView,
     ZettleDashboardView,
     ZettleDataImportView,
-    ZettleReceiptListView,
+    ZettleReceiptListView, OrderRefundView,
 )
 
 app_name = "backoffice"
@@ -282,6 +282,11 @@ urlpatterns = [
                                             "update/",
                                             OrderUpdateView.as_view(),
                                             name="order_update",
+                                        ),
+                                        path(
+                                            "refund/",
+                                            OrderRefundView.as_view(),
+                                            name="order_refund",
                                         ),
                                         path(
                                             "download_proforma_invoice/",

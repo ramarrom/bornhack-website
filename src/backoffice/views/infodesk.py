@@ -5,8 +5,10 @@ from typing import Optional
 
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db import transaction
 from django.db.models import Q
-from django.http import Http404, HttpResponse
+from django.http import Http404, HttpResponse, HttpResponseRedirect
+from django.urls import reverse
 from django.utils import timezone
 from django.views.generic import DetailView, ListView, TemplateView, UpdateView
 
@@ -21,6 +23,7 @@ from tickets.models import (
     TicketTypeUnion,
 )
 
+from ..forms import OrderProductRelationRefundFormSet
 from ..mixins import InfoTeamPermissionMixin
 
 logger = logging.getLogger("bornhack.%s" % __name__)
@@ -236,6 +239,42 @@ class OrderDetailView(CampViewMixin, InfoTeamPermissionMixin, DetailView):
     model = Order
     template_name = "order_detail_backoffice.html"
     pk_url_kwarg = "order_id"
+
+
+class OrderRefundView(CampViewMixin, InfoTeamPermissionMixin, DetailView):
+    model = Order
+    template_name = "order_refund_backoffice.html"
+    pk_url_kwarg = "order_id"
+
+    def get_context_data(self, **kwargs):
+        kwargs["formset"] = OrderProductRelationRefundFormSet(
+            queryset=OrderProductRelation.objects.filter(order=self.get_object())
+        )
+        return super().get_context_data(**kwargs)
+
+    def post(self, request, *args, **kwargs):
+        formset = OrderProductRelationRefundFormSet(
+            request.POST, queryset=OrderProductRelation.objects.filter(order=self.get_object())
+        )
+
+        if not formset.is_valid():
+            messages.error(
+                request,
+                "Some error!",
+            )
+            return self.render_to_response({"formset": formset})
+
+        _lock = (OrderProductRelation.objects.select_related("shoptickets")
+                 .filter(order=self.get_object()).select_for_update())
+        with transaction.atomic():
+            for form in formset:
+                opr = form.save(commit=False)
+                opr.refunded += form.cleaned_data["refund_quantity"]
+                opr.save()
+
+        return HttpResponseRedirect(
+            reverse("backoffice:order_list", kwargs={"camp_slug": self.camp.slug})
+        )
 
 
 class OrderDownloadProformaInvoiceView(LoginRequiredMixin, DetailView):
