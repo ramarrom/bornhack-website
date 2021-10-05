@@ -6,9 +6,9 @@ from typing import Optional
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
-from django.http import HttpResponse
+from django.http import Http404, HttpResponse
 from django.utils import timezone
-from django.views.generic import ListView, TemplateView
+from django.views.generic import DetailView, ListView, TemplateView, UpdateView
 
 from camps.mixins import CampViewMixin
 from economy.models import Pos
@@ -215,6 +215,34 @@ class InvoiceListCSVView(CampViewMixin, InfoTeamPermissionMixin, ListView):
 class OrderListView(CampViewMixin, InfoTeamPermissionMixin, ListView):
     model = Order
     template_name = "order_list_backoffice.html"
+
+
+class OrderDetailView(CampViewMixin, InfoTeamPermissionMixin, DetailView):
+    model = Order
+    template_name = "order_detail_backoffice.html"
+    pk_url_kwarg = "order_id"
+
+
+class OrderDownloadProformaInvoiceView(LoginRequiredMixin, DetailView):
+    model = Order
+    pk_url_kwarg = "order_id"
+
+    def get(self, request, *args, **kwargs):
+        if not self.get_object().pdf:
+            raise Http404
+        response = HttpResponse(content_type="application/pdf")
+        response[
+            "Content-Disposition"
+        ] = f"attachment; filename='{self.get_object().filename}'"
+        response.write(self.get_object().pdf.read())
+        return response
+
+
+class OrderUpdateView(CampViewMixin, InfoTeamPermissionMixin, UpdateView):
+    model = Order
+    pk_url_kwarg = "order_id"
+    template_name = "order_update.html"
+    fields = ["notes"]
 
 
 class CreditNoteListView(CampViewMixin, InfoTeamPermissionMixin, ListView):

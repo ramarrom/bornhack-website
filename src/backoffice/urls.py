@@ -87,7 +87,10 @@ from .views import (
     MerchandiseToOrderView,
     MobilePayCSVImportView,
     MobilePayTransactionListView,
+    OrderDetailView,
+    OrderDownloadProformaInvoiceView,
     OrderListView,
+    OrderUpdateView,
     OutgoingEmailMassUpdateView,
     PendingProposalsView,
     PosCreateView,
@@ -260,7 +263,36 @@ urlpatterns = [
                         ]
                     ),
                 ),
-                path("orders/", OrderListView.as_view(), name="order_list"),
+                path(
+                    "orders/",
+                    include(
+                        [
+                            path("", OrderListView.as_view(), name="order_list"),
+                            path(
+                                "<int:order_id>/",
+                                include(
+                                    [
+                                        path(
+                                            "",
+                                            OrderDetailView.as_view(),
+                                            name="order_detail",
+                                        ),
+                                        path(
+                                            "update/",
+                                            OrderUpdateView.as_view(),
+                                            name="order_update",
+                                        ),
+                                        path(
+                                            "download_proforma_invoice/",
+                                            OrderDownloadProformaInvoiceView.as_view(),
+                                            name="order_download_proforma_invoice",
+                                        ),
+                                    ]
+                                ),
+                            ),
+                        ]
+                    ),
+                ),
                 path(
                     "invoices/",
                     include(
