@@ -18,6 +18,7 @@ from django.db.models import (
     Sum,
 )
 from django.urls import reverse_lazy
+from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
 from utils.models import CampRelatedModel, UUIDModel
@@ -97,8 +98,7 @@ def qr_code_base64(token):
 
 class BaseTicket(CampRelatedModel, UUIDModel):
     ticket_type = models.ForeignKey("TicketType", on_delete=models.PROTECT)
-    used = models.BooleanField(default=False)
-    used_time = models.DateTimeField(null=True, blank=True)
+    used_at = models.DateTimeField(null=True, blank=True)
     used_pos = models.ForeignKey(
         "economy.Pos",
         on_delete=models.PROTECT,
@@ -107,7 +107,7 @@ class BaseTicket(CampRelatedModel, UUIDModel):
         related_name=None,
         help_text="The Pos this ticket was scanned in",
     )
-    used_pos_username = models.ForeignKey(
+    used_pos_user = models.ForeignKey(
         "auth.User",
         on_delete=models.PROTECT,
         null=True,
@@ -169,6 +169,12 @@ class BaseTicket(CampRelatedModel, UUIDModel):
             formatdict=formatdict,
             template="pdf/ticket.html",
         )
+
+    def mark_as_used(self, *, pos, user):
+        self.used_at = timezone.now()
+        self.used_pos = pos
+        self.used_pos_user = user
+        self.save()
 
 
 class SponsorTicket(BaseTicket):

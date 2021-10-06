@@ -12,7 +12,7 @@ from .models import (
     EpayTransaction,
     MobilePayTransaction,
     ZettleBalance,
-    ZettleReceipt,
+    ZettleReceipt, Pos,
 )
 
 
@@ -291,3 +291,11 @@ class MobilePayTransactionFactory(factory.django.DjangoModelFactory):
     payment_point = "BornHack 2021"
     myshop_number = "18291"
     bank_account = factory.Faker("numerify", text="####00000######")
+
+
+class PosFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = Pos
+
+    team = factory.SubFactory("teams.factories.TeamFactory")
+    name = factory.Faker("name")
