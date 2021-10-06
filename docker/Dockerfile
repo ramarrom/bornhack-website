@@ -32,4 +32,3 @@ RUN pip3 install --no-cache-dir  -r /tmp/dev.txt
 
 RUN groupadd -g 1000 www
 RUN useradd -u 1000 -ms /bin/bash -g www www
-#COPY --chown=www:www ./ /app/
