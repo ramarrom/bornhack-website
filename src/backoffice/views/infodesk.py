@@ -230,6 +230,19 @@ class OrderListView(CampViewMixin, InfoTeamPermissionMixin, ListView):
     model = Order
     template_name = "order_list_backoffice.html"
 
+    def get_queryset(self, **kwargs):
+        """Preload stuff for speed."""
+        return (
+            super()
+            .get_queryset()
+            .prefetch_related(
+                "oprs__product",
+                "user",
+                "invoice",
+                "refunds",
+            )
+        )
+
 
 class OrderDetailView(CampViewMixin, InfoTeamPermissionMixin, DetailView):
     model = Order
@@ -250,7 +263,8 @@ class OrderRefundView(CampViewMixin, InfoTeamPermissionMixin, DetailView):
 
     def post(self, request, *args, **kwargs):
         formset = OrderProductRelationRefundFormSet(
-            request.POST, queryset=OrderProductRelation.objects.filter(order=self.get_object())
+            request.POST,
+            queryset=OrderProductRelation.objects.filter(order=self.get_object()),
         )
 
         if not formset.is_valid():
@@ -260,8 +274,12 @@ class OrderRefundView(CampViewMixin, InfoTeamPermissionMixin, DetailView):
             )
             return self.render_to_response({"formset": formset})
 
-        _lock = (OrderProductRelation.objects.select_related("shoptickets")
-                 .filter(order=self.get_object()).select_for_update())
+        # get a lock for all the OPRs we are updating
+        _ = (
+            OrderProductRelation.objects.select_related("shoptickets")
+            .filter(order=self.get_object())
+            .select_for_update()
+        )
         with transaction.atomic():
             for form in formset:
                 opr = form.save(commit=False)
