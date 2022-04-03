@@ -51,9 +51,7 @@ class EnsureCreditNoteHasPDFMixin(SingleObjectMixin):
             messages.error(request, "This creditnote has no PDF yet!")
             return HttpResponseRedirect(reverse_lazy("shop:creditnote_list"))
 
-        return super(EnsureCreditNoteHasPDFMixin, self).dispatch(
-            request, *args, **kwargs
-        )
+        return super().dispatch(request, *args, **kwargs)
 
 
 class EnsureUserOwnsCreditNoteMixin(SingleObjectMixin):
@@ -65,9 +63,7 @@ class EnsureUserOwnsCreditNoteMixin(SingleObjectMixin):
             if self.get_object().user != request.user:
                 raise Http404("CreditNote not found")
 
-        return super(EnsureUserOwnsCreditNoteMixin, self).dispatch(
-            request, *args, **kwargs
-        )
+        return super().dispatch(request, *args, **kwargs)
 
 
 class EnsureUserOwnsOrderMixin(SingleObjectMixin):
@@ -79,7 +75,7 @@ class EnsureUserOwnsOrderMixin(SingleObjectMixin):
             if self.get_object().user != request.user:
                 raise Http404("Order not found")
 
-        return super(EnsureUserOwnsOrderMixin, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
 
 class EnsureUnpaidOrderMixin(SingleObjectMixin):
@@ -92,7 +88,7 @@ class EnsureUnpaidOrderMixin(SingleObjectMixin):
                 reverse_lazy("shop:order_detail", kwargs={"pk": self.get_object().pk})
             )
 
-        return super(EnsureUnpaidOrderMixin, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
 
 class EnsurePaidOrderMixin(SingleObjectMixin):
@@ -105,7 +101,7 @@ class EnsurePaidOrderMixin(SingleObjectMixin):
                 reverse_lazy("shop:order_detail", kwargs={"pk": self.get_object().pk})
             )
 
-        return super(EnsurePaidOrderMixin, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
 
 class EnsureClosedOrderMixin(SingleObjectMixin):
@@ -118,7 +114,7 @@ class EnsureClosedOrderMixin(SingleObjectMixin):
                 reverse_lazy("shop:order_detail", kwargs={"pk": self.get_object().pk})
             )
 
-        return super(EnsureClosedOrderMixin, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
 
 class EnsureOrderHasProductsMixin(SingleObjectMixin):
@@ -129,9 +125,7 @@ class EnsureOrderHasProductsMixin(SingleObjectMixin):
             messages.error(request, "This order has no products!")
             return HttpResponseRedirect(reverse_lazy("shop:index"))
 
-        return super(EnsureOrderHasProductsMixin, self).dispatch(
-            request, *args, **kwargs
-        )
+        return super().dispatch(request, *args, **kwargs)
 
 
 class EnsureOrderIsNotCancelledMixin(SingleObjectMixin):
@@ -144,9 +138,7 @@ class EnsureOrderIsNotCancelledMixin(SingleObjectMixin):
             )
             return HttpResponseRedirect(reverse_lazy("shop:index"))
 
-        return super(EnsureOrderIsNotCancelledMixin, self).dispatch(
-            request, *args, **kwargs
-        )
+        return super().dispatch(request, *args, **kwargs)
 
 
 # Shop views
@@ -156,13 +148,13 @@ class ShopIndexView(ListView):
     context_object_name = "products"
 
     def get_queryset(self):
-        queryset = super(ShopIndexView, self).get_queryset()
+        queryset = super().get_queryset()
         return queryset.available().order_by(
             "category__weight", "category__name", "price", "name"
         )
 
     def get_context_data(self, **kwargs):
-        context = super(ShopIndexView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         if "category" in self.request.GET:
             category = self.request.GET.get("category")
@@ -229,7 +221,7 @@ class ProductDetailView(FormView, DetailView):
             except OrderProductRelation.DoesNotExist:
                 self.opr = OrderProductRelation(product=self.get_object(), quantity=1)
 
-        return super(ProductDetailView, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
         opr = form.save(commit=False)
@@ -249,7 +241,7 @@ class ProductDetailView(FormView, DetailView):
         )
 
         # done
-        return super(ProductDetailView, self).form_valid(form)
+        return super().form_valid(form)
 
     def get_success_url(self):
         return reverse("shop:index")
@@ -261,7 +253,7 @@ class OrderListView(LoginRequiredMixin, ListView):
     context_object_name = "orders"
 
     def get_queryset(self):
-        queryset = super(OrderListView, self).get_queryset()
+        queryset = super().get_queryset()
         return queryset.filter(user=self.request.user).not_cancelled()
 
 
