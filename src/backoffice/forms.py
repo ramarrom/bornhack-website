@@ -159,6 +159,7 @@ class MobilePayCSVForm(forms.Form):
 
 class ShopTicketRefundForm(forms.ModelForm):
     class Meta:
+        model = ShopTicket
         fields = ["refund"]
 
     refund = forms.BooleanField(required=False)

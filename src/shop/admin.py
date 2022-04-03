@@ -13,6 +13,8 @@ from .models import (
     OrderProductRelation,
     Product,
     ProductCategory,
+    Refund,
+    RefundProductRelation,
 )
 
 admin.site.register(EpayCallback)
@@ -177,3 +179,12 @@ class OrderAdmin(admin.ModelAdmin):
 
 def get_user_email(obj):
     return obj.order.user.email
+
+
+class RefundInline(admin.TabularInline):
+    model = RefundProductRelation
+
+
+@admin.register(Refund)
+class RefundAdmin(admin.ModelAdmin):
+    inlines = [RefundInline]
