@@ -99,3 +99,5 @@ BORNHACK_2019_OLD_TOKEN_TOKEN = "{{ bornhack_2019_old_token_token }}"
 KORTFORSYNINGEN_TOKEN = "{{ kortforsyningen_token }}"
 BACKOFFICE_PROXY_URLS = {{ backoffice_proxy_urls }}
 
+QUICKPAY_API_KEY="{{ quickpay_api_key }}"
+QUICKPAY_PRIVATE_KEY="{{ quickpay_private_key }}"

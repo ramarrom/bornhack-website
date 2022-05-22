@@ -8,15 +8,15 @@ from .views import (
     CreditNoteListView,
     DownloadCreditNoteView,
     DownloadInvoiceView,
-    EpayCallbackView,
-    EpayFormView,
-    EpayThanksView,
     OrderDetailView,
     OrderListView,
     OrderMarkAsPaidView,
     OrderReviewAndPayView,
     PayInPersonView,
     ProductDetailView,
+    QuickPayCallbackView,
+    QuickPayLinkView,
+    QuickPayThanksView,
     ShopIndexView,
 )
 
@@ -44,16 +44,23 @@ urlpatterns = [
                     OrderMarkAsPaidView.as_view(),
                     name="mark_order_as_paid",
                 ),
-                path("pay/creditcard/", EpayFormView.as_view(), name="epay_form"),
                 path(
-                    "pay/creditcard/callback/",
-                    EpayCallbackView.as_view(),
-                    name="epay_callback",
-                ),
-                path(
-                    "pay/creditcard/thanks/",
-                    EpayThanksView.as_view(),
-                    name="epay_thanks",
+                    "pay/creditcard/",
+                    include(
+                        [
+                            path("", QuickPayLinkView.as_view(), name="quickpay_link"),
+                            path(
+                                "callback/",
+                                QuickPayCallbackView.as_view(),
+                                name="quickpay_callback",
+                            ),
+                            path(
+                                "thanks/",
+                                QuickPayThanksView.as_view(),
+                                name="quickpay_thanks",
+                            ),
+                        ],
+                    ),
                 ),
                 path(
                     "pay/blockchain/", CoinifyRedirectView.as_view(), name="coinify_pay"
