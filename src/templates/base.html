@@ -1,5 +1,5 @@
 {% load static %}
-{% load bootstrap5 %}
+{% load django_bootstrap5 %}
 {% load menubutton %}
 {% static "" as baseurl %}
 
@@ -13,7 +13,7 @@
     <title>{% block title %}BornHack{% endblock %}</title>
 
     <!-- Bootstrap core CSS -->
-    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+    {% bootstrap_css %}
 
     <!-- FontAwesome CSS -->
     <link href="{% static 'css/fontawesome-all-5.0.13.min.css' %}" rel="stylesheet">
@@ -24,9 +24,10 @@
     <!-- https://datatables.net/ -->
     <link href="{% static 'css/jquery.dataTables.1.10.20.min.css' %}" rel="stylesheet">
 
-    {% bootstrap_javascript jquery=1 %}
+    {% bootstrap_javascript %}
 
     <!-- https://datatables.net/ -->
+    <script src="{% static "js/jquery-3.3.1.min.js" %}"></script>
     <script src="{% static "js/jquery.dataTables.1.10.20.min.js" %}"></script>
     <script src="{% static "js/moment.2.8.4.min.js" %}"></script>
     <script src="{% static "js/jquery.dataTables.datatime-moment.js" %}"></script>
