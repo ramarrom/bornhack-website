@@ -1,12 +1,10 @@
-from pathlib import Path
-
+from .base_settings import BASE_DIR
 from .environment_settings import *  # noqa: F403
 from utils import range_fields  # noqa: F401
 
 # monkeypatch postgres Range object to support lookups
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
 
 WSGI_APPLICATION = "bornhack.wsgi.application"
 ASGI_APPLICATION = "bornhack.routing.application"
@@ -69,7 +67,6 @@ INSTALLED_APPS = [
 
 # MEDIA_URL = '/media/'
 STATIC_URL = "/static/"
-STATIC_ROOT = str(BASE_DIR / "static")
 STATICFILES_DIRS = [BASE_DIR / "static_src"]
 LANGUAGE_CODE = "en-us"
 # USE_I18N = True

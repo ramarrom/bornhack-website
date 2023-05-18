@@ -1,5 +1,7 @@
 import os
 
+from .base_settings import BASE_DIR
+
 # MODIFY THIS!
 #
 # If you worry about loosing your local development database secrets,
@@ -29,9 +31,9 @@ CHANNEL_LAYERS = {}
 ASGI_APPLICATION = "bornhack.routing.application"
 
 CAMP_REDIRECT_PERCENT = 40
-MEDIA_ROOT = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "media"
-)
+MEDIA_DIR = BASE_DIR / "media"
+MEDIA_ROOT = str(MEDIA_DIR)
+STATIC_ROOT = str(BASE_DIR / "static")
 
 # schedule settings
 SCHEDULE_MIDNIGHT_OFFSET_HOURS = 9
@@ -40,9 +42,9 @@ SCHEDULE_EVENT_NOTIFICATION_MINUTES = 10
 SPEAKER_AVAILABILITY_DAYCHUNK_HOURS=3
 
 PDF_LETTERHEAD_FILENAME = "bornhack_test_letterhead.pdf"
-PDF_ARCHIVE_PATH = os.path.join(MEDIA_ROOT, "pdf_archive")
+PDF_ARCHIVE_PATH = str(MEDIA_DIR / "pdf_archive")
 
-SENDFILE_ROOT = MEDIA_ROOT + "/protected"
+SENDFILE_ROOT = str(MEDIA_DIR / "protected")
 SENDFILE_URL = "/protected"
 SENDFILE_BACKEND = "sendfile.backends.development"
 

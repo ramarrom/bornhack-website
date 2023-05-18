@@ -1,3 +1,5 @@
+from .base_settings import BASE_DIR
+
 # make this a long 100+ chars random string
 SECRET_KEY = '{{ django_secret_key }}'
 
@@ -44,6 +46,7 @@ ADMINS={{ django_admins }}
 # misc settings
 TIME_ZONE='{{ django_timezone }}'
 MEDIA_ROOT='{{ django_media_root }}'
+STATIC_ROOT = str(BASE_DIR / "static")
 PDF_ARCHIVE_PATH='{{ pdf_archive_path }}'
 
 # PSP settings
